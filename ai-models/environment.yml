@@ -1,0 +1,4 @@
+name: rescue-net-ai
+channels:
+  - conda-forge
+prefix: /home/kalvin-shah/miniforge3/envs/rescue-net-ai

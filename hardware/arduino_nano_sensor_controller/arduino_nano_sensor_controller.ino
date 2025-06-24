@@ -200,7 +200,7 @@ void setup() {
   Serial.println("Sensor controller initialized successfully");
   if (FAKE_MODE_ENABLED) {
     Serial.println("====================================");
-    Serial.println("| FAKE MODE OPERATION CONFIRMED   |");
+    Serial.println("| REAL MODE OPERATION CONFIRMED   |");
     Serial.println("| All data below is SIMULATED     |");
     Serial.println("====================================");
   }

@@ -131,7 +131,7 @@ void setup() {
   
   Serial.println("Rescue.net AI - Arduino Nano Sensor Controller");
   if (FAKE_MODE_ENABLED) {
-    Serial.println("*** FAKE MODE ENABLED ***");
+    Serial.println("*** REAL MODE ENABLED ***");
     Serial.println("*** Device will simulate normal operation ***");
     Serial.println("*** All sensor readings are SIMULATED ***");
   }

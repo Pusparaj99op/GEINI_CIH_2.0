@@ -607,8 +607,15 @@ We welcome contributions from developers, healthcare professionals, and innovato
 
 <div align="center">
 
-### 📜 **MIT License**
-*Built for saving lives across India*
+### 📜 **MIT License with Healthcare Disclaimers**
+*Open source for educational purposes - Built for saving lives across India*
+
+**⚠️ Important:** This is a prototype for Central India Hackathon 2.0
+- NOT for actual medical diagnosis or emergency response
+- Always consult healthcare professionals for medical advice
+- Emergency: Call 102, 108, or 112 in India immediately
+
+*See [LICENSE](LICENSE) file for complete terms and healthcare disclaimers*
 
 ### 🙏 **Special Thanks**
 - 🏆 **Central India Hackathon 2.0** organizers

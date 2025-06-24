@@ -92,7 +92,19 @@ risk_score = monitor.analyze_vitals(heart_rate, temperature, bp)
 - **Multi-modal Analysis**: Combines vital signs, motion, and environmental data
 - **Cultural Adaptation**: Models trained on Indian population health patterns
 
+## 📄 License
+
+This project is licensed under the MIT License with additional healthcare disclaimers.
+
+**Important Notes:**
+- This is a prototype for educational purposes (Central India Hackathon 2.0)
+- NOT intended for actual medical diagnosis or emergency response
+- Always consult qualified healthcare professionals for medical advice
+- In emergencies, contact local services (102, 108, 112 in India)
+
+See the [LICENSE](../LICENSE) file for full details including healthcare and emergency disclaimers.
+
 ---
 
-*Last Updated: June 22, 2025*
+*Last Updated: June 24, 2025*
 *Central India Hackathon 2.0 - Rescue.net AI Team*

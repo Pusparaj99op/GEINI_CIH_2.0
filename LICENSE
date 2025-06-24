@@ -1,0 +1,42 @@
+MIT License
+
+Copyright (c) 2025 Rescue.net AI Team - Central India Hackathon 2.0
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+HEALTHCARE DISCLAIMER:
+This software is a prototype developed for educational and demonstration purposes
+as part of Central India Hackathon 2.0. It is NOT intended for actual medical
+diagnosis, treatment, or emergency response. Users should always consult qualified
+healthcare professionals for medical advice and emergency situations.
+
+The developers make no warranties regarding the accuracy, reliability, or
+suitability of this software for medical purposes. This prototype should not
+be used as a substitute for professional medical equipment or emergency services.
+
+EMERGENCY DISCLAIMER:
+In case of real medical emergencies, always contact local emergency services
+immediately (call 102, 108, or 112 in India). Do not rely solely on this
+prototype system for emergency detection or response.
+
+DATA PRIVACY:
+This software handles simulated health data for demonstration purposes only.
+Any implementation with real patient data must comply with applicable healthcare
+data protection regulations including but not limited to HIPAA, GDPR, and
+Indian Personal Data Protection Act.

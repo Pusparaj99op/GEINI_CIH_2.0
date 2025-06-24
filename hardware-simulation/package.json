@@ -2,6 +2,8 @@
   "name": "rescue-net-hardware-simulation",
   "version": "1.0.0",
   "description": "Hardware simulation server for Rescue.net AI wearable devices",
+  "author": "Rescue.net AI Team - Central India Hackathon 2.0",
+  "license": "MIT",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -19,10 +21,9 @@
   },
   "keywords": [
     "rescue-net",
-    "iot",
+    "iot", 
     "health-monitoring",
-    "emergency-response"
-  ],
-  "author": "Rescue.net AI Team",
-  "license": "MIT"
+    "emergency-response",
+    "central-india-hackathon"
+  ]
 }

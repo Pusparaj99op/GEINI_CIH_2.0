@@ -1,6 +1,9 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "rescue-net-ai-frontend", 
+  "version": "1.0.0",
+  "description": "Frontend dashboard for Rescue.net AI - Emergency Response Platform",
+  "author": "Rescue.net AI Team - Central India Hackathon 2.0",
+  "license": "MIT",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",

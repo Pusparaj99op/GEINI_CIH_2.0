@@ -8,6 +8,12 @@
  * - Optimized data structures
  * - Reduced library dependencies where possible
  * 
+ * Copyright (c) 2025 Rescue.net AI Team - Central India Hackathon 2.0
+ * Licensed under MIT License - See LICENSE file for details
+ * 
+ * HEALTHCARE DISCLAIMER: This is a prototype for educational purposes only.
+ * NOT intended for actual medical diagnosis or emergency response.
+ * 
  * Author: Rescue.net AI Team
  * Date: June 2025
  * Version: 1.1 (Optimized)

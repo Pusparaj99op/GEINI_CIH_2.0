@@ -1,6 +1,12 @@
 # AI Service - Real-time Health Analysis API
 # Flask API service that integrates all AI models for health monitoring
 # Connects with Node.js backend to provide AI predictions and emergency detection
+# 
+# Copyright (c) 2025 Rescue.net AI Team - Central India Hackathon 2.0
+# Licensed under MIT License - See LICENSE file for details
+# 
+# HEALTHCARE DISCLAIMER: This is a prototype for educational purposes only.
+# NOT intended for actual medical diagnosis or emergency response.
 
 import os
 import sys

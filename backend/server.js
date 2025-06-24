@@ -3,6 +3,12 @@
  * Main server file that initializes all services and routes
  * Built for Central India Hackathon 2.0
  * 
+ * Copyright (c) 2025 Rescue.net AI Team
+ * Licensed under MIT License - See LICENSE file for details
+ * 
+ * HEALTHCARE DISCLAIMER: This is a prototype for educational purposes only.
+ * NOT intended for actual medical diagnosis or emergency response.
+ * 
  * This server handles:
  * - Real-time health data from wearable devices
  * - Emergency detection and alerting

@@ -77,10 +77,26 @@ const LoginPage: React.FC = () => {
 
     try {
       const userType = tabValue === 0 ? 'patient' : 'hospital';
-      await login(formData.email, formData.password, userType);
+      console.log('🔐 Login attempt:', { 
+        email: formData.email, 
+        password: formData.password.substring(0, 3) + '***',
+        userType,
+        API_URL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api'
+      });
       
-      // Navigation is handled automatically by the auth context
-    } catch (error) {
+      await login(formData.email, formData.password, userType);
+      console.log('✅ Login successful in component');
+      
+      // Navigate to appropriate dashboard after successful login
+      const redirectPath = userType === 'patient' ? '/patient' : '/hospital';
+      console.log('🔄 Navigating to:', redirectPath);
+      navigate(redirectPath);
+      
+    } catch (error: any) {
+      console.error('❌ Login error in component:', error);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error config:', error.config);
       // Error is handled by the auth context
     }
   };

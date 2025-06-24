@@ -27,6 +27,12 @@
 #define TEMP_SENSOR_PIN 4
 #define ESP32_TX_PIN 2
 #define ESP32_RX_PIN 3
+// FAKE MODE PINS
+#define FAKE_LED_1_PIN 6
+#define FAKE_LED_2_PIN 7
+#define FAKE_LED_3_PIN 8
+#define FAKE_BUZZER_PIN 9
+#define FAKE_VIBRATOR_PIN 10
 
 // Pulse Sensor Configuration
 #define PULSE_THRESHOLD 700
@@ -86,23 +92,100 @@ boolean fallInProgress = false;
 String receivedCommand = "";
 unsigned long lastDataSend = 0;
 
+// FAKE MODE CONFIGURATION
+#define FAKE_MODE_ENABLED true  // Set to true to enable fake mode
+#define FAKE_UPDATE_INTERVAL 50   // Update fake effects every 50ms for more responsive activity
+#define FAKE_SENSOR_INTERVAL 1000 // Update fake sensor values every 1 second for more variation
+
+// FAKE MODE VARIABLES
+unsigned long lastFakeUpdate = 0;
+unsigned long lastFakeSensorUpdate = 0;
+float fakeHeartRate = 72.0;
+float fakeTemperature = 36.8;
+float fakeAccelX = 0.1;
+float fakeAccelY = 0.0;
+float fakeAccelZ = 9.8;
+bool fakeFallDetected = false;
+unsigned long fakeFallTime = 0;
+
+// Enhanced random patterns for fake mode
+int fakeLedStates[4] = {0, 0, 0, 0}; // Added onboard LED
+unsigned long fakeLedTimers[4] = {0, 0, 0, 0};
+int fakeLedPatterns[4] = {800, 1200, 600, 1500}; // Different blink patterns
+bool fakeBuzzerState = false;
+unsigned long fakeBuzzerTimer = 0;
+bool fakeVibratorState = false;
+unsigned long fakeVibratorTimer = 0;
+
+// Fake activity patterns
+int fakeBeepPattern = 0;
+unsigned long lastFakeBeep = 0;
+int fakeVibroPattern = 0;
+unsigned long lastFakeVibro = 0;
+float heartRateVariation = 0.0;
+float tempVariation = 0.0;
+
 void setup() {
   Serial.begin(9600);
   esp32Serial.begin(9600);
   
   Serial.println("Rescue.net AI - Arduino Nano Sensor Controller");
+  if (FAKE_MODE_ENABLED) {
+    Serial.println("*** FAKE MODE ENABLED ***");
+    Serial.println("*** Device will simulate normal operation ***");
+    Serial.println("*** All sensor readings are SIMULATED ***");
+  }
   Serial.println("Initializing sensors...");
   
   // Initialize pins
   pinMode(PULSE_BLINK_PIN, OUTPUT);
   pinMode(PULSE_FADE_PIN, OUTPUT);
   
+  // Initialize fake mode pins
+  if (FAKE_MODE_ENABLED) {
+    pinMode(FAKE_LED_1_PIN, OUTPUT);
+    pinMode(FAKE_LED_2_PIN, OUTPUT);
+    pinMode(FAKE_LED_3_PIN, OUTPUT);
+    pinMode(FAKE_BUZZER_PIN, OUTPUT);
+    pinMode(FAKE_VIBRATOR_PIN, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT);
+    
+    // Initialize random seed for better randomness
+    randomSeed(analogRead(A5) + millis());
+    
+    // Initial LED states for visual confirmation
+    digitalWrite(FAKE_LED_1_PIN, HIGH);
+    delay(200);
+    digitalWrite(FAKE_LED_2_PIN, HIGH);
+    delay(200);
+    digitalWrite(FAKE_LED_3_PIN, HIGH);
+    delay(200);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(200);
+    
+    // Turn all off
+    digitalWrite(FAKE_LED_1_PIN, LOW);
+    digitalWrite(FAKE_LED_2_PIN, LOW);
+    digitalWrite(FAKE_LED_3_PIN, LOW);
+    digitalWrite(LED_BUILTIN, LOW);
+    
+    // Play startup sequence
+    for(int i = 0; i < 3; i++) {
+      tone(FAKE_BUZZER_PIN, 1000 + (i * 200), 150);
+      delay(200);
+    }
+    
+    Serial.println("Fake mode hardware initialized");
+  }
+  
   // Initialize temperature sensor
   temperatureSensor.begin();
   temperatureSensor.setResolution(TEMP_PRECISION);
   
-  // Initialize pulse sensor interrupt
-  interruptSetup();
+  // Initialize pulse sensor interrupt (even in fake mode for completeness)
+  if (!FAKE_MODE_ENABLED) {
+    interruptSetup();
+  }
   
   // Initialize sensor readings
   currentReadings.heartRate = 0.0;
@@ -115,24 +198,53 @@ void setup() {
   currentReadings.timestamp = 0;
   
   Serial.println("Sensor controller initialized successfully");
+  if (FAKE_MODE_ENABLED) {
+    Serial.println("====================================");
+    Serial.println("| FAKE MODE OPERATION CONFIRMED   |");
+    Serial.println("| All data below is SIMULATED     |");
+    Serial.println("====================================");
+  }
   delay(2000);
 }
 
 void loop() {
+  // Handle fake mode effects first
+  if (FAKE_MODE_ENABLED) {
+    handleFakeEffects();
+    updateFakeSensorData();
+  }
+  
   // Handle communication with ESP32
   handleESP32Communication();
   
   // Read temperature sensor
-  readTemperature();
+  if (FAKE_MODE_ENABLED) {
+    // Use fake temperature data
+    currentReadings.temperature = fakeTemperature;
+  } else {
+    readTemperature();
+  }
   
   // Read accelerometer data
-  readAccelerometer();
-  
-  // Detect falls
-  detectFalls();
+  if (FAKE_MODE_ENABLED) {
+    // Use fake accelerometer data
+    currentReadings.accelerationX = fakeAccelX;
+    currentReadings.accelerationY = fakeAccelY;
+    currentReadings.accelerationZ = fakeAccelZ;
+    currentReadings.totalAcceleration = sqrt(fakeAccelX*fakeAccelX + fakeAccelY*fakeAccelY + fakeAccelZ*fakeAccelZ);
+    currentReadings.fallDetected = fakeFallDetected;
+  } else {
+    readAccelerometer();
+    detectFalls();
+  }
   
   // Process pulse sensor data
-  processPulseData();
+  if (FAKE_MODE_ENABLED) {
+    // Use fake heart rate data
+    currentReadings.heartRate = fakeHeartRate;
+  } else {
+    processPulseData();
+  }
   
   // Send data periodically (every 5 seconds)
   if (millis() - lastDataSend > 5000) {
@@ -325,13 +437,13 @@ void detectFalls() {
 }
 
 void processPulseData() {
+  static int fadeRate = 0;
+  
   // Fade LED based on pulse
   if (QS) {
     fadeRate = 255;
     QS = false;
   }
-  
-  static int fadeRate = 0;
   if (fadeRate > 0) {
     fadeRate -= 15;
     if (fadeRate < 0) fadeRate = 0;
@@ -373,19 +485,44 @@ void handleESP32Communication() {
 void sendSensorData() {
   currentReadings.timestamp = millis();
   
+  // Use fake or real data based on mode
+  float heartRateToSend = FAKE_MODE_ENABLED ? fakeHeartRate : currentReadings.heartRate;
+  float temperatureToSend = FAKE_MODE_ENABLED ? fakeTemperature : currentReadings.temperature;
+  float bloodPressureToSend = FAKE_MODE_ENABLED ? estimateFakeBloodPressure() : estimateBloodPressure();
+  float accelXToSend = FAKE_MODE_ENABLED ? fakeAccelX : currentReadings.accelerationX;
+  float accelYToSend = FAKE_MODE_ENABLED ? fakeAccelY : currentReadings.accelerationY;
+  float accelZToSend = FAKE_MODE_ENABLED ? fakeAccelZ : currentReadings.accelerationZ;
+  bool fallToSend = FAKE_MODE_ENABLED ? fakeFallDetected : currentReadings.fallDetected;
+  
   // Format: "HR:75.2,TEMP:36.8,BP:120.5,AX:0.1,AY:0.2,AZ:9.8,FALL:0"
-  String dataString = "HR:" + String(currentReadings.heartRate, 1) + ",";
-  dataString += "TEMP:" + String(currentReadings.temperature, 1) + ",";
-  dataString += "BP:" + String(estimateBloodPressure(), 1) + ",";
-  dataString += "AX:" + String(currentReadings.accelerationX, 2) + ",";
-  dataString += "AY:" + String(currentReadings.accelerationY, 2) + ",";
-  dataString += "AZ:" + String(currentReadings.accelerationZ, 2) + ",";
-  dataString += "FALL:" + String(currentReadings.fallDetected ? 1 : 0);
+  String dataString = "HR:" + String(heartRateToSend, 1) + ",";
+  dataString += "TEMP:" + String(temperatureToSend, 1) + ",";
+  dataString += "BP:" + String(bloodPressureToSend, 1) + ",";
+  dataString += "AX:" + String(accelXToSend, 2) + ",";
+  dataString += "AY:" + String(accelYToSend, 2) + ",";
+  dataString += "AZ:" + String(accelZToSend, 2) + ",";
+  dataString += "FALL:" + String(fallToSend ? 1 : 0);
   
   esp32Serial.println(dataString);
   
   // Also send to serial monitor for debugging
-  Serial.println("Sensor Data: " + dataString);
+  String modePrefix = FAKE_MODE_ENABLED ? "[FAKE] " : "[REAL] ";
+  Serial.println(modePrefix + "Sensor Data: " + dataString);
+}
+
+float estimateFakeBloodPressure() {
+  // Generate realistic fake blood pressure based on fake heart rate
+  float systolic = 110 + (fakeHeartRate - 70) * 0.5;
+  systolic += random(-50, 51) / 10.0; // ±5 mmHg variation
+  
+  if (fakeTemperature > 37.0) {
+    systolic += (fakeTemperature - 37.0) * 3;
+  }
+  
+  if (systolic < 90) systolic = 90;
+  if (systolic > 140) systolic = 140;
+  
+  return systolic;
 }
 
 void sendEmergencyAlert() {
@@ -652,4 +789,230 @@ void performSelfDiagnostic() {
   }
   
   Serial.println("Self-diagnostic complete");
+}
+
+// FAKE MODE FUNCTIONS
+void handleFakeEffects() {
+  if (millis() - lastFakeUpdate < FAKE_UPDATE_INTERVAL) {
+    return;
+  }
+  
+  lastFakeUpdate = millis();
+  
+  // Handle fake LED blinking with random patterns (including onboard LED)
+  for (int i = 0; i < 4; i++) {
+    if (millis() - fakeLedTimers[i] > fakeLedPatterns[i] + random(0, 800)) {
+      fakeLedStates[i] = !fakeLedStates[i];
+      
+      switch(i) {
+        case 0:
+          digitalWrite(FAKE_LED_1_PIN, fakeLedStates[i]);
+          break;
+        case 1:
+          digitalWrite(FAKE_LED_2_PIN, fakeLedStates[i]);
+          break;
+        case 2:
+          digitalWrite(FAKE_LED_3_PIN, fakeLedStates[i]);
+          break;
+        case 3:
+          digitalWrite(LED_BUILTIN, fakeLedStates[i]); // Onboard LED
+          break;
+      }
+      
+      fakeLedTimers[i] = millis();
+      fakeLedPatterns[i] = random(300, 2500); // More varied patterns
+    }
+  }
+  
+  // Enhanced fake buzzer beeps with different patterns
+  if (millis() - lastFakeBeep > random(2000, 6000)) {
+    fakeBeepPattern = random(1, 5);
+    
+    switch(fakeBeepPattern) {
+      case 1: // Single beep
+        tone(FAKE_BUZZER_PIN, random(800, 1500), random(100, 300));
+        break;
+      case 2: // Double beep
+        tone(FAKE_BUZZER_PIN, random(1000, 2000), 150);
+        delay(200);
+        tone(FAKE_BUZZER_PIN, random(800, 1500), 150);
+        break;
+      case 3: // Triple beep
+        for(int i = 0; i < 3; i++) {
+          tone(FAKE_BUZZER_PIN, random(900, 1800), random(80, 150));
+          delay(random(120, 200));
+        }
+        break;
+      case 4: // Rising tone
+        for(int freq = 800; freq < 1600; freq += 100) {
+          tone(FAKE_BUZZER_PIN, freq, 50);
+          delay(60);
+        }
+        break;
+    }
+    lastFakeBeep = millis();
+  }
+  
+  // Enhanced fake vibrator patterns
+  if (millis() - lastFakeVibro > random(3000, 8000)) {
+    fakeVibroPattern = random(1, 4);
+    
+    switch(fakeVibroPattern) {
+      case 1: // Short pulses
+        for (int i = 0; i < random(2, 6); i++) {
+          digitalWrite(FAKE_VIBRATOR_PIN, HIGH);
+          delay(random(100, 250));
+          digitalWrite(FAKE_VIBRATOR_PIN, LOW);
+          delay(random(50, 150));
+        }
+        break;
+      case 2: // Long vibration
+        digitalWrite(FAKE_VIBRATOR_PIN, HIGH);
+        delay(random(500, 1000));
+        digitalWrite(FAKE_VIBRATOR_PIN, LOW);
+        break;
+      case 3: // Pulse pattern
+        for (int i = 0; i < 3; i++) {
+          digitalWrite(FAKE_VIBRATOR_PIN, HIGH);
+          delay(200);
+          digitalWrite(FAKE_VIBRATOR_PIN, LOW);
+          delay(100);
+        }
+        break;
+    }
+    lastFakeVibro = millis();
+  }
+}
+
+void updateFakeSensorData() {
+  if (millis() - lastFakeSensorUpdate < FAKE_SENSOR_INTERVAL) {
+    return;
+  }
+  
+  lastFakeSensorUpdate = millis();
+  
+  // Generate realistic human-like heart rate variations (60-100 BPM normal range)
+  heartRateVariation += random(-30, 31) / 10.0; // Larger variations for realism
+  heartRateVariation = constrain(heartRateVariation, -10.0, 10.0);
+  fakeHeartRate = 72.0 + heartRateVariation + random(-20, 21) / 10.0;
+  fakeHeartRate = constrain(fakeHeartRate, 62.0, 95.0); // Normal human range
+  
+  // Add occasional spikes for realism (exercise, stress, etc.)
+  if (random(0, 100) < 5) { // 5% chance
+    fakeHeartRate += random(10, 25);
+    fakeHeartRate = constrain(fakeHeartRate, 62.0, 120.0);
+  }
+  
+  // Generate realistic human body temperature (36.1-37.2°C normal range)
+  tempVariation += random(-20, 21) / 100.0;
+  tempVariation = constrain(tempVariation, -0.5, 0.5);
+  fakeTemperature = 36.8 + tempVariation + random(-15, 16) / 100.0;
+  fakeTemperature = constrain(fakeTemperature, 36.1, 37.2);
+  
+  // Add occasional fever simulation
+  if (random(0, 200) < 3) { // 1.5% chance
+    fakeTemperature += random(50, 150) / 100.0;
+    fakeTemperature = constrain(fakeTemperature, 36.1, 38.5);
+  }
+  
+  // Generate realistic accelerometer data (normal human movement)
+  fakeAccelX += random(-40, 41) / 100.0;
+  fakeAccelY += random(-40, 41) / 100.0;
+  fakeAccelZ = 9.8 + random(-20, 21) / 100.0; // Gravity with minor variations
+  
+  fakeAccelX = constrain(fakeAccelX, -3.0, 3.0);
+  fakeAccelY = constrain(fakeAccelY, -3.0, 3.0);
+  fakeAccelZ = constrain(fakeAccelZ, 9.0, 10.6);
+  
+  // Simulate walking/movement patterns
+  if (random(0, 100) < 20) { // 20% chance of movement
+    fakeAccelX += random(-100, 101) / 100.0;
+    fakeAccelY += random(-100, 101) / 100.0;
+    fakeAccelX = constrain(fakeAccelX, -5.0, 5.0);
+    fakeAccelY = constrain(fakeAccelY, -5.0, 5.0);
+  }
+  
+  // Simulate very rare fall events (for testing)
+  if (random(0, 2000) < 1) { // 0.05% chance
+    fakeFallDetected = true;
+    fakeFallTime = millis();
+    Serial.println("[FAKE] Simulated fall event triggered!");
+  }
+  
+  if (fakeFallDetected && (millis() - fakeFallTime > 15000)) {
+    fakeFallDetected = false;
+  }
+  
+  // Print enhanced fake sensor values with more realistic format
+  Serial.println("╔════════════════════════════╗");
+  Serial.println("║      FAKE SENSOR DATA      ║");
+  Serial.println("╠════════════════════════════╣");
+  Serial.printf("║ Heart Rate: %6.1f BPM     ║\n", fakeHeartRate);
+  Serial.printf("║ Temperature: %5.2f°C      ║\n", fakeTemperature);
+  Serial.printf("║ Blood Pressure: %5.1f mmHg ║\n", estimateFakeBloodPressure());
+  Serial.printf("║ Accel X: %7.2f g        ║\n", fakeAccelX);
+  Serial.printf("║ Accel Y: %7.2f g        ║\n", fakeAccelY);
+  Serial.printf("║ Accel Z: %7.2f g        ║\n", fakeAccelZ);
+  Serial.printf("║ Fall: %18s ║\n", fakeFallDetected ? "DETECTED" : "Normal");
+  Serial.printf("║ Status: %16s ║\n", "Active");
+  Serial.printf("║ Uptime: %15lu ms ║\n", millis());
+  Serial.println("╚════════════════════════════╝");
+  
+  // Additional diagnostic info occasionally
+  if (random(0, 10) < 2) { // 20% chance
+    Serial.println("[INFO] All sensors functioning normally");
+    Serial.println("[INFO] Patient monitoring active");
+    Serial.printf("[INFO] Memory usage: %d bytes\n", random(800, 1200));
+    Serial.printf("[INFO] Signal strength: %d%%\n", random(75, 100));
+  }
+}
+
+// FAKE MODE FUNCTIONS
+void updateFakeEffects() {
+  // Update fake LED states
+  for (int i = 0; i < 3; i++) {
+    if (millis() - fakeLedTimers[i] > fakeLedPatterns[i]) {
+      fakeLedStates[i] = !fakeLedStates[i];
+      digitalWrite(FAKE_LED_1_PIN + i, fakeLedStates[i]);
+      fakeLedTimers[i] = millis();
+    }
+  }
+  
+  // Update fake buzzer state
+  if (millis() - fakeBuzzerTimer > 500) {
+    fakeBuzzerState = !fakeBuzzerState;
+    digitalWrite(FAKE_BUZZER_PIN, fakeBuzzerState ? HIGH : LOW);
+    fakeBuzzerTimer = millis();
+  }
+  
+  // Update fake vibrator state
+  if (millis() - fakeVibratorTimer > 800) {
+    fakeVibratorState = !fakeVibratorState;
+    digitalWrite(FAKE_VIBRATOR_PIN, fakeVibratorState ? HIGH : LOW);
+    fakeVibratorTimer = millis();
+  }
+  
+  // Randomly simulate fall detection
+  if (millis() - lastFakeSensorUpdate > FAKE_SENSOR_INTERVAL) {
+    fakeFallDetected = (random(0, 10) < 2);  // 20% chance of fall detection
+    lastFakeSensorUpdate = millis();
+  }
+  
+  // Update fake sensor values
+  if (fakeFallDetected) {
+    currentReadings.heartRate = fakeHeartRate + random(-5, 5);
+    currentReadings.temperature = fakeTemperature + random(-2, 2);
+    currentReadings.accelerationX = fakeAccelX + random(-10, 10) / 100.0;
+    currentReadings.accelerationY = fakeAccelY + random(-10, 10) / 100.0;
+    currentReadings.accelerationZ = fakeAccelZ + random(-10, 10) / 100.0;
+    currentReadings.fallDetected = true;
+    fakeFallTime = millis();
+  } else {
+    currentReadings.fallDetected = false;
+  }
+  
+  // Simulate fall recovery
+  if (currentReadings.fallDetected && (millis() - fakeFallTime > 5000)) {
+    currentReadings.fallDetected = false;
+  }
 }

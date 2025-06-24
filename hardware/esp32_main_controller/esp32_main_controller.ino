@@ -43,6 +43,12 @@
 #define SDA_PIN 21
 #define SCL_PIN 22
 
+// FAKE MODE CONFIGURATION
+#define FAKE_MODE_ENABLED true
+#define FAKE_LED_1_PIN 12
+#define FAKE_LED_2_PIN 13
+#define FAKE_LED_3_PIN 14
+
 // Display Configuration
 #define SCREEN_WIDTH 128
 #define SCREEN_HEIGHT 64
@@ -120,12 +126,33 @@ uint32_t lastHeartbeat = 0;
 uint32_t lastDataLog = 0;
 bool emergencyTriggered = false;
 
+// FAKE MODE VARIABLES
+bool fakeModeActive = FAKE_MODE_ENABLED;
+uint32_t lastFakeUpdate = 0;
+uint32_t lastFakeSensorUpdate = 0;
+uint32_t lastFakeBeep = 0;
+uint32_t lastFakeVibro = 0;
+uint32_t fakeLedTimers[4] = {0, 0, 0, 0};
+bool fakeLedStates[4] = {false, false, false, false};
+int fakeLedPatterns[4] = {600, 900, 1200, 800};
+int fakeBeepPattern = 0;
+int fakeVibroPattern = 0;
+
+// Fake sensor data
+float fakeHeartRate = 74.0;
+float fakeTemperature = 36.7;
+float fakeBloodPressure = 118.0;
+float heartRateVariation = 0.0;
+float tempVariation = 0.0;
+float bpVariation = 0.0;
+
 // Function Prototypes
 void initializeSystem();
 void sensorTask(void* parameter);
 void communicationTask(void* parameter);
 void displayTask(void* parameter);
 void emergencyTask(void* parameter);
+void fakeActivityTask(void* parameter); // New fake activity task
 bool readSensorData();
 bool readGPSData();
 void logDataToSD();
@@ -135,10 +162,18 @@ void updateDisplay();
 void checkWiFiConnection();
 void playStartupSound();
 void printMemoryUsage();
+void handleFakeEffects();
+void updateFakeSensorData();
+void generateFakeActivities();
 
 void setup() {
   Serial.begin(115200);
   Serial.println(F("Rescue.net AI - Starting up..."));
+  
+  if (fakeModeActive) {
+    Serial.println(F("*** FAKE MODE ACTIVATED ***"));
+    Serial.println(F("*** Device will appear to work normally ***"));
+  }
   
   // Generate device ID
   uint64_t mac = ESP.getEfuseMac();
@@ -151,6 +186,12 @@ void setup() {
   xTaskCreatePinnedToCore(communicationTask, "CommTask", 4096, NULL, 1, &communicationTaskHandle, 1);
   xTaskCreatePinnedToCore(displayTask, "DisplayTask", 2048, NULL, 1, &displayTaskHandle, 0);
   xTaskCreatePinnedToCore(emergencyTask, "EmergencyTask", 3072, NULL, 3, &emergencyTaskHandle, 1);
+  
+  // Create fake activity task if fake mode is enabled
+  if (fakeModeActive) {
+    TaskHandle_t fakeTaskHandle;
+    xTaskCreatePinnedToCore(fakeActivityTask, "FakeActivity", 2048, NULL, 1, &fakeTaskHandle, 0);
+  }
   
   // Create semaphores
   sensorDataMutex = xSemaphoreCreateMutex();
@@ -182,6 +223,15 @@ void initializeSystem() {
   pinMode(VIBRATOR_2_PIN, OUTPUT);
   pinMode(LED_PIN, OUTPUT);
   
+  // Initialize fake mode pins
+  if (fakeModeActive) {
+    pinMode(FAKE_LED_1_PIN, OUTPUT);
+    pinMode(FAKE_LED_2_PIN, OUTPUT);
+    pinMode(FAKE_LED_3_PIN, OUTPUT);
+    // Initialize random seed
+    randomSeed(analogRead(A0) + millis());
+  }
+  
   // Initialize I2C
   Wire.begin(SDA_PIN, SCL_PIN);
   
@@ -195,7 +245,11 @@ void initializeSystem() {
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0, 0);
     display.println(F("Rescue.net AI"));
-    display.println(F("Initializing..."));
+    if (fakeModeActive) {
+      display.println(F("FAKE MODE ACTIVE"));
+    } else {
+      display.println(F("Initializing..."));
+    }
     display.display();
   }
   
@@ -244,8 +298,18 @@ void sensorTask(void* parameter) {
   Serial.println(F("Sensor task started"));
   
   while (1) {
-    if (readSensorData()) {
-      // Check for emergency conditions
+    bool dataReceived = false;
+    
+    if (fakeModeActive) {
+      // In fake mode, we already have data from updateFakeSensorData()
+      dataReceived = true;
+    } else {
+      // Real mode - read from actual sensors
+      dataReceived = readSensorData();
+    }
+    
+    if (dataReceived) {
+      // Check for emergency conditions (use same logic for fake and real data)
       if (currentSensorData.fallDetected || 
           currentSensorData.heartRate > 120 || 
           currentSensorData.heartRate < 50 ||
@@ -256,8 +320,13 @@ void sensorTask(void* parameter) {
           emergencyTriggered = true;
           systemStatus.emergencyMode = true;
           
-          // Notify emergency task
-          xTaskNotify(emergencyTaskHandle, 1, eSetBits);
+          // In fake mode, print fake emergency alert
+          if (fakeModeActive) {
+            Serial.println(F("[FAKE] Emergency condition detected - would trigger alert"));
+          } else {
+            // Notify emergency task
+            xTaskNotify(emergencyTaskHandle, 1, eSetBits);
+          }
         }
       }
       
@@ -485,6 +554,9 @@ void updateDisplay() {
     display.setTextColor(SSD1306_WHITE);
   } else {
     display.println(F("Rescue.net AI"));
+    if (fakeModeActive) {
+      display.println(F("*** FAKE MODE ***"));
+    }
   }
   
   display.printf("HR: %u BPM\n", currentSensorData.heartRate);
@@ -501,6 +573,10 @@ void updateDisplay() {
   
   if (currentGPSData.isValid) {
     display.printf("Sat: %u\n", currentGPSData.satellites);
+  }
+  
+  if (fakeModeActive) {
+    display.printf("FAKE: Active\n");
   }
   
   display.display();
@@ -544,4 +620,166 @@ void printMemoryUsage() {
   Serial.printf("Min free heap: %d bytes\n", ESP.getMinFreeHeap());
   Serial.printf("Heap size: %d bytes\n", ESP.getHeapSize());
   Serial.printf("Free PSRAM: %d bytes\n", ESP.getFreePsram());
+}
+
+// FAKE ACTIVITY TASK
+void fakeActivityTask(void* parameter) {
+  Serial.println(F("Fake activity task started"));
+  
+  while (1) {
+    if (fakeModeActive) {
+      handleFakeEffects();
+      updateFakeSensorData();
+      generateFakeActivities();
+    }
+    
+    vTaskDelay(pdMS_TO_TICKS(100)); // Update every 100ms
+  }
+}
+
+void handleFakeEffects() {
+  uint32_t currentTime = millis();
+  
+  // Handle fake LED blinking with random patterns
+  for (int i = 0; i < 4; i++) {
+    if (currentTime - fakeLedTimers[i] > fakeLedPatterns[i] + random(0, 600)) {
+      fakeLedStates[i] = !fakeLedStates[i];
+      
+      switch(i) {
+        case 0:
+          digitalWrite(FAKE_LED_1_PIN, fakeLedStates[i]);
+          break;
+        case 1:
+          digitalWrite(FAKE_LED_2_PIN, fakeLedStates[i]);
+          break;
+        case 2:
+          digitalWrite(FAKE_LED_3_PIN, fakeLedStates[i]);
+          break;
+        case 3:
+          digitalWrite(LED_PIN, fakeLedStates[i]); // Onboard LED
+          break;
+      }
+      
+      fakeLedTimers[i] = currentTime;
+      fakeLedPatterns[i] = random(400, 2000);
+    }
+  }
+}
+
+void updateFakeSensorData() {
+  uint32_t currentTime = millis();
+  
+  if (currentTime - lastFakeSensorUpdate < 1500) {
+    return;
+  }
+  
+  lastFakeSensorUpdate = currentTime;
+  
+  // Generate realistic human-like variations
+  heartRateVariation += random(-25, 26) / 10.0;
+  heartRateVariation = constrain(heartRateVariation, -8.0, 8.0);
+  fakeHeartRate = 74.0 + heartRateVariation + random(-15, 16) / 10.0;
+  fakeHeartRate = constrain(fakeHeartRate, 65.0, 95.0);
+  
+  tempVariation += random(-15, 16) / 100.0;
+  tempVariation = constrain(tempVariation, -0.4, 0.4);
+  fakeTemperature = 36.7 + tempVariation + random(-10, 11) / 100.0;
+  fakeTemperature = constrain(fakeTemperature, 36.2, 37.1);
+  
+  bpVariation += random(-20, 21) / 10.0;
+  bpVariation = constrain(bpVariation, -5.0, 5.0);
+  fakeBloodPressure = 118.0 + bpVariation + random(-15, 16) / 10.0;
+  fakeBloodPressure = constrain(fakeBloodPressure, 110.0, 135.0);
+  
+  // Update sensor data structure with fake values
+  if (xSemaphoreTake(sensorDataMutex, pdMS_TO_TICKS(50)) == pdTRUE) {
+    currentSensorData.heartRate = (uint16_t)fakeHeartRate;
+    currentSensorData.temperature = (int16_t)(fakeTemperature * 100);
+    currentSensorData.bloodPressure = (uint16_t)fakeBloodPressure;
+    currentSensorData.accelerationX = random(-200, 201);
+    currentSensorData.accelerationY = random(-200, 201);
+    currentSensorData.accelerationZ = 9800 + random(-100, 101);
+    currentSensorData.fallDetected = (random(0, 1000) < 2); // 0.2% chance
+    currentSensorData.timestamp = currentTime;
+    xSemaphoreGive(sensorDataMutex);
+  }
+}
+
+void generateFakeActivities() {
+  uint32_t currentTime = millis();
+  
+  // Random beeping patterns
+  if (currentTime - lastFakeBeep > random(3000, 8000)) {
+    fakeBeepPattern = random(1, 5);
+    
+    switch(fakeBeepPattern) {
+      case 1: // Single beep
+        tone(BUZZER_PIN, random(800, 1500), random(100, 250));
+        break;
+      case 2: // Double beep
+        tone(BUZZER_PIN, random(1000, 1800), 120);
+        vTaskDelay(pdMS_TO_TICKS(150));
+        tone(BUZZER_PIN, random(800, 1400), 120);
+        break;
+      case 3: // Triple beep
+        for(int i = 0; i < 3; i++) {
+          tone(BUZZER_PIN, random(900, 1600), random(80, 120));
+          vTaskDelay(pdMS_TO_TICKS(random(100, 150)));
+        }
+        break;
+      case 4: // Alert pattern
+        for(int freq = 800; freq < 1400; freq += 100) {
+          tone(BUZZER_PIN, freq, 40);
+          vTaskDelay(pdMS_TO_TICKS(50));
+        }
+        break;
+    }
+    lastFakeBeep = currentTime;
+  }
+  
+  // Random vibration patterns
+  if (currentTime - lastFakeVibro > random(4000, 10000)) {
+    fakeVibroPattern = random(1, 4);
+    
+    switch(fakeVibroPattern) {
+      case 1: // Short pulses
+        for (int i = 0; i < random(2, 5); i++) {
+          digitalWrite(VIBRATOR_1_PIN, HIGH);
+          vTaskDelay(pdMS_TO_TICKS(random(150, 300)));
+          digitalWrite(VIBRATOR_1_PIN, LOW);
+          vTaskDelay(pdMS_TO_TICKS(random(80, 150)));
+        }
+        break;
+      case 2: // Alternating vibrators
+        for (int i = 0; i < 3; i++) {
+          digitalWrite(VIBRATOR_1_PIN, HIGH);
+          vTaskDelay(pdMS_TO_TICKS(200));
+          digitalWrite(VIBRATOR_1_PIN, LOW);
+          digitalWrite(VIBRATOR_2_PIN, HIGH);
+          vTaskDelay(pdMS_TO_TICKS(200));
+          digitalWrite(VIBRATOR_2_PIN, LOW);
+        }
+        break;
+      case 3: // Long vibration
+        digitalWrite(VIBRATOR_1_PIN, HIGH);
+        digitalWrite(VIBRATOR_2_PIN, HIGH);
+        vTaskDelay(pdMS_TO_TICKS(random(500, 1200)));
+        digitalWrite(VIBRATOR_1_PIN, LOW);
+        digitalWrite(VIBRATOR_2_PIN, LOW);
+        break;
+    }
+    lastFakeVibro = currentTime;
+  }
+  
+  // Print fake diagnostic messages occasionally
+  if (random(0, 100) < 3) { // 3% chance
+    Serial.printf("[FAKE] Sensor reading: HR=%u, Temp=%.1f°C, BP=%u\n", 
+                  currentSensorData.heartRate, 
+                  currentSensorData.temperature / 100.0, 
+                  currentSensorData.bloodPressure);
+    Serial.printf("[FAKE] System status: WiFi=%s, GPS=%s, Emergency=%s\n",
+                  systemStatus.wifiConnected ? "OK" : "ERR",
+                  systemStatus.gpsActive ? "OK" : "SEARCHING",
+                  systemStatus.emergencyMode ? "ACTIVE" : "STANDBY");
+  }
 }

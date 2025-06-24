@@ -16,12 +16,22 @@ class WebSocketService {
   connect(userId: string, userType: 'patient' | 'hospital', hospitalId?: string) {
     const SOCKET_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:3001';
     
-    this.socket = io(SOCKET_URL, {
-      auth: {
-        token: localStorage.getItem('authToken')
-      },
-      transports: ['websocket', 'polling']
-    });
+    try {
+      console.log('🔌 Attempting to connect to WebSocket server:', SOCKET_URL);
+      this.socket = io(SOCKET_URL, {
+        auth: {
+          token: localStorage.getItem('authToken')
+        },
+        transports: ['websocket', 'polling'],
+        reconnection: true,
+        reconnectionDelay: 1000,
+        reconnectionAttempts: 5,
+        timeout: 10000
+      });
+    } catch (error) {
+      console.error('⚠️ Failed to initialize WebSocket connection:', error);
+      throw new Error('WebSocket initialization failed');
+    }
 
     this.socket.on('connect', () => {
       console.log('🔌 Connected to Rescue.net AI server');

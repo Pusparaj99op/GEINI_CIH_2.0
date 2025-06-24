@@ -47,7 +47,10 @@ const server = http.createServer(app);
 // Initialize Socket.IO with CORS
 const io = socketIo(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: [
+      process.env.CORS_ORIGIN || "http://localhost:3000", 
+      "http://localhost:3002"
+    ],
     methods: ["GET", "POST"]
   }
 });
@@ -62,13 +65,16 @@ const limiter = rateLimit({
 app.use(helmet()); // Security headers
 app.use(compression()); // Compress responses
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || [
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [
     'http://localhost:3000', 
     'http://127.0.0.1:3000',
+    'http://localhost:3002',  // Added new frontend port
+    'http://127.0.0.1:3002',  // Added new frontend port
     'http://localhost:8080',
     'http://127.0.0.1:8080',
     'http://192.168.1.9:8080',
     'http://192.168.1.9:3000',
+    'http://192.168.1.9:3002', // Added new frontend port with IP
     'null' // Allow file:// origins for test dashboard
   ],
   credentials: true

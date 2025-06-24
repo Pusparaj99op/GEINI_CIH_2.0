@@ -135,11 +135,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string, userType: 'patient' | 'hospital') => {
     try {
+      console.log('🔄 AuthContext: Starting login process');
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'CLEAR_ERROR' });
 
       const loginFunction = userType === 'patient' ? authAPI.loginPatient : authAPI.loginHospital;
+      console.log('🌐 AuthContext: Making API call to', userType, 'login endpoint');
+      
       const response = await loginFunction({ email, password });
+      console.log('✅ AuthContext: API response received', response.data);
       
       const { token, user } = response.data.data;
       
@@ -147,13 +151,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       localStorage.setItem('authToken', token);
       localStorage.setItem('user', JSON.stringify(user));
       
+      console.log('💾 AuthContext: Token and user stored');
       dispatch({ type: 'SET_USER', payload: user });
       
-      // Connect to WebSocket
-      const hospitalId = user.userType === 'hospital' ? user.id : undefined;
-      webSocketService.connect(user.id, user.userType, hospitalId);
+      // Connect to WebSocket (but don't let it fail the login)
+      try {
+        const hospitalId = user.userType === 'hospital' ? user.id : undefined;
+        webSocketService.connect(user.id, user.userType, hospitalId);
+        console.log('🔌 AuthContext: WebSocket connected');
+      } catch (wsError) {
+        console.warn('⚠️ AuthContext: WebSocket connection failed, but login successful:', wsError);
+      }
       
     } catch (error: any) {
+      console.error('❌ AuthContext: Login error:', error);
+      console.error('❌ AuthContext: Error response:', error.response?.data);
+      console.error('❌ AuthContext: Error status:', error.response?.status);
       const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       throw error;

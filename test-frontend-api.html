@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frontend API Test</title>
+</head>
+<body>
+    <h1>Frontend API Connection Test</h1>
+    <button onclick="testHospitalLogin()">Test Hospital Login</button>
+    <button onclick="testPatientLogin()">Test Patient Login</button>
+    <div id="results"></div>
+
+    <script>
+        function log(message) {
+            const results = document.getElementById('results');
+            results.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            console.log(message);
+        }
+
+        async function testHospitalLogin() {
+            log('🔐 Testing hospital login...');
+            try {
+                const response = await fetch('http://localhost:3001/api/auth/hospital/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'demo@hospital.com',
+                        password: 'hospital123'
+                    })
+                });
+                
+                const data = await response.json();
+                log('✅ Hospital login response: ' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                log('❌ Hospital login error: ' + error.message);
+            }
+        }
+
+        async function testPatientLogin() {
+            log('🔐 Testing patient login...');
+            try {
+                const response = await fetch('http://localhost:3001/api/auth/patient/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: '9876543210',
+                        password: 'patient123'
+                    })
+                });
+                
+                const data = await response.json();
+                log('✅ Patient login response: ' + JSON.stringify(data, null, 2));
+            } catch (error) {
+                log('❌ Patient login error: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

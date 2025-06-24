@@ -96,34 +96,59 @@ const LoginPage: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+          zIndex: 0,
+        },
         padding: 2,
       }}
     >
       <Paper
-        elevation={8}
+        elevation={0}
         sx={{
           maxWidth: 450,
           width: '100%',
           padding: 4,
-          borderRadius: 3,
+          borderRadius: 4,
+          background: 'rgba(255, 255, 255, 0.25)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)',
+          position: 'relative',
+          zIndex: 1,
         }}
       >
         {/* Header */}
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
           <Box
             sx={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              mb: 2,
+              mb: 3,
+              p: 2,
+              borderRadius: 3,
+              background: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(10px)',
+              mx: 'auto',
+              width: 'fit-content',
             }}
           >
             <Favorite 
               sx={{ 
                 fontSize: 40, 
-                color: 'primary.main',
+                color: '#ff6b6b',
                 mr: 1,
+                filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))',
               }} 
             />
             <Typography
@@ -131,7 +156,9 @@ const LoginPage: React.FC = () => {
               component="h1"
               sx={{
                 fontWeight: 'bold',
-                color: 'primary.main',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
               }}
             >
               Rescue.net
@@ -141,8 +168,10 @@ const LoginPage: React.FC = () => {
           <Typography
             variant="subtitle1"
             sx={{
-              color: 'text.secondary',
+              color: 'rgba(0,0,0,0.8)',
               fontStyle: 'italic',
+              fontWeight: 500,
+              textShadow: '0 1px 3px rgba(0,0,0,0.1)',
             }}
           >
             AI-Powered Emergency Response
@@ -150,25 +179,58 @@ const LoginPage: React.FC = () => {
         </Box>
 
         {/* User Type Tabs */}
-        <Tabs
-          value={tabValue}
-          onChange={handleTabChange}
-          variant="fullWidth"
-          sx={{ mb: 2 }}
+        <Box 
+          sx={{ 
+            mb: 3,
+            p: 1,
+            borderRadius: 3,
+            background: 'rgba(255, 255, 255, 0.3)',
+            backdropFilter: 'blur(10px)',
+          }}
         >
-          <Tab
-            icon={<Person />}
-            label="Patient"
-            iconPosition="start"
-            sx={{ textTransform: 'none' }}
-          />
-          <Tab
-            icon={<LocalHospital />}
-            label="Hospital"
-            iconPosition="start"
-            sx={{ textTransform: 'none' }}
-          />
-        </Tabs>
+          <Tabs
+            value={tabValue}
+            onChange={handleTabChange}
+            variant="fullWidth"
+            sx={{ 
+              '& .MuiTab-root': {
+                borderRadius: 2,
+                margin: 0.5,
+                transition: 'all 0.3s ease',
+                '&.Mui-selected': {
+                  background: 'rgba(255, 255, 255, 0.4)',
+                  backdropFilter: 'blur(10px)',
+                  color: '#667eea',
+                },
+                '&:hover': {
+                  background: 'rgba(255, 255, 255, 0.2)',
+                },
+              },
+              '& .MuiTabs-indicator': {
+                display: 'none',
+              },
+            }}
+          >
+            <Tab
+              icon={<Person />}
+              label="Patient"
+              iconPosition="start"
+              sx={{ 
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            />
+            <Tab
+              icon={<LocalHospital />}
+              label="Hospital"
+              iconPosition="start"
+              sx={{ 
+                textTransform: 'none',
+                fontWeight: 600,
+              }}
+            />
+          </Tabs>
+        </Box>
 
         {/* Error Alert */}
         {error && (

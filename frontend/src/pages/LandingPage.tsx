@@ -82,31 +82,81 @@ const LandingPage: React.FC = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: '100vh', position: 'relative' }}>
       {/* Header */}
-      <AppBar position="fixed" elevation={0} sx={{ bgcolor: 'white', borderBottom: '1px solid #e0e0e0' }}>
+      <AppBar 
+        position="fixed" 
+        elevation={0} 
+        sx={{ 
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: 'none',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+        }}
+      >
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-            <Favorite sx={{ color: 'primary.main', mr: 1, fontSize: 32 }} />
-            <Typography variant="h5" component="div" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-              Rescue.net AI
-            </Typography>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                p: 1,
+                borderRadius: 2,
+                background: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(10px)',
+                mr: 2
+              }}
+            >
+              <Favorite sx={{ color: '#ff6b6b', mr: 1, fontSize: 32 }} />
+              <Typography variant="h5" component="div" sx={{ 
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 'bold' 
+              }}>
+                Rescue.net AI
+              </Typography>
+            </Box>
             <Chip 
               label="CIH 2.0" 
               size="small" 
-              color="secondary" 
-              sx={{ ml: 2, fontWeight: 'bold' }}
+              sx={{ 
+                background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                color: 'white',
+                fontWeight: 'bold',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #e73c7e 0%, #f5576c 100%)',
+                }
+              }}
             />
           </Box>
           <Button 
             variant="outlined" 
-            sx={{ mr: 2 }}
+            sx={{ 
+              mr: 2,
+              background: 'rgba(255, 255, 255, 0.1)',
+              backdropFilter: 'blur(10px)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: 'white',
+              '&:hover': {
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.4)',
+              }
+            }}
             onClick={() => navigate('/login')}
           >
             Sign In
           </Button>
           <Button 
             variant="contained" 
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+                transform: 'translateY(-2px)',
+              }
+            }}
             onClick={() => navigate('/register')}
           >
             Get Started
@@ -119,27 +169,70 @@ const LandingPage: React.FC = () => {
         sx={{
           pt: 12,
           pb: 8,
-          background: 'linear-gradient(135deg, #2E7D32 0%, #4CAF50 100%)',
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           color: 'white',
           position: 'relative',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.8) 0%, rgba(118, 75, 162, 0.8) 100%)',
+            zIndex: -1,
+          }
         }}
       >
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', gap: 4 }}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              <Typography 
+                variant="h2" 
+                component="h1" 
+                gutterBottom 
+                sx={{ 
+                  fontWeight: 700,
+                  textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                  animation: 'floating 6s ease-in-out infinite',
+                  color: 'white',
+                  background: 'none',
+                  WebkitTextFillColor: 'white',
+                }}
+              >
                 India's First Predictive Emergency Response Ecosystem
               </Typography>
-              <Typography variant="h6" paragraph sx={{ opacity: 0.9 }}>
+              <Typography 
+                variant="h6" 
+                paragraph 
+                sx={{ 
+                  opacity: 0.95,
+                  textShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                  lineHeight: 1.6,
+                }}
+              >
                 Revolutionary AI-powered wearable technology that predicts health emergencies 
                 and coordinates instant response to save lives across India.
               </Typography>
-              <Stack direction="row" spacing={2} sx={{ mt: 4 }}>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4 }}>
                 <Button 
                   variant="contained" 
                   size="large"
-                  sx={{ bgcolor: 'white', color: 'primary.main', '&:hover': { bgcolor: '#f5f5f5' } }}
+                  sx={{ 
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(20px)',
+                    color: 'white',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    '&:hover': { 
+                      background: 'rgba(255, 255, 255, 0.3)',
+                      transform: 'translateY(-3px)',
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                    }
+                  }}
                   startIcon={<PlayArrow />}
                   onClick={() => navigate('/login')}
                 >
@@ -148,7 +241,17 @@ const LandingPage: React.FC = () => {
                 <Button 
                   variant="outlined" 
                   size="large"
-                  sx={{ borderColor: 'white', color: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+                  sx={{ 
+                    borderColor: 'rgba(255, 255, 255, 0.5)', 
+                    color: 'white',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    '&:hover': { 
+                      borderColor: 'rgba(255, 255, 255, 0.8)', 
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      transform: 'translateY(-3px)',
+                    }
+                  }}
                   onClick={() => navigate('/register')}
                 >
                   Learn More
@@ -157,19 +260,47 @@ const LandingPage: React.FC = () => {
             </Box>
             <Box sx={{ flex: 1, textAlign: 'center' }}>
               <Box
+                className="floating-element"
                 sx={{
-                  width: { xs: 200, md: 300 },
-                  height: { xs: 200, md: 300 },
-                  bgcolor: 'rgba(255,255,255,0.1)',
+                  width: { xs: 250, md: 350 },
+                  height: { xs: 250, md: 350 },
+                  background: 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(30px)',
+                  WebkitBackdropFilter: 'blur(30px)',
                   borderRadius: '50%',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   mx: 'auto',
-                  border: '3px solid rgba(255,255,255,0.3)',
+                  border: '3px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: -50,
+                    left: -50,
+                    width: '200%',
+                    height: '200%',
+                    background: 'conic-gradient(transparent, rgba(255, 255, 255, 0.3), transparent)',
+                    animation: 'spin 4s linear infinite',
+                  },
+                  '@keyframes spin': {
+                    from: { transform: 'rotate(0deg)' },
+                    to: { transform: 'rotate(360deg)' },
+                  },
                 }}
               >
-                <MonitorHeart sx={{ fontSize: { xs: 80, md: 120 }, color: 'white' }} />
+                <MonitorHeart 
+                  className="pulse-animation"
+                  sx={{ 
+                    fontSize: { xs: 100, md: 140 }, 
+                    color: 'white',
+                    zIndex: 1,
+                    filter: 'drop-shadow(0 4px 20px rgba(0,0,0,0.3))',
+                  }} 
+                />
               </Box>
             </Box>
           </Box>
@@ -178,14 +309,48 @@ const LandingPage: React.FC = () => {
 
       {/* Stats Section */}
       <Container maxWidth="lg" sx={{ mt: -4, position: 'relative', zIndex: 2 }}>
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Paper 
+          elevation={0} 
+          sx={{ 
+            p: 4, 
+            borderRadius: 4,
+            background: 'rgba(255, 255, 255, 0.25)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.18)',
+            boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)',
+          }}
+        >
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'space-around' }}>
             {stats.map((stat, index) => (
-              <Box key={index} sx={{ textAlign: 'center', minWidth: 120 }}>
-                <Typography variant="h3" color="primary" fontWeight="bold">
+              <Box 
+                key={index} 
+                sx={{ 
+                  textAlign: 'center', 
+                  minWidth: 120,
+                  p: 2,
+                  borderRadius: 3,
+                  background: 'rgba(255, 255, 255, 0.3)',
+                  backdropFilter: 'blur(10px)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    transform: 'translateY(-5px)',
+                    background: 'rgba(255, 255, 255, 0.4)',
+                  }
+                }}
+              >
+                <Typography 
+                  variant="h3" 
+                  sx={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    fontWeight: 'bold'
+                  }}
+                >
                   {stat.number}
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="body1" sx={{ color: 'rgba(0,0,0,0.8)', fontWeight: 500 }}>
                   {stat.label}
                 </Typography>
               </Box>
@@ -197,10 +362,29 @@ const LandingPage: React.FC = () => {
       {/* Features Section */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography variant="h3" component="h2" gutterBottom fontWeight="bold">
+          <Typography 
+            variant="h3" 
+            component="h2" 
+            gutterBottom 
+            sx={{
+              fontWeight: 'bold',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              mb: 2,
+            }}
+          >
             Cutting-Edge Healthcare Technology
           </Typography>
-          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+          <Typography 
+            variant="h6" 
+            sx={{ 
+              maxWidth: 600, 
+              mx: 'auto',
+              color: 'rgba(255, 255, 255, 0.9)',
+              textShadow: '0 2px 10px rgba(0,0,0,0.3)',
+            }}
+          >
             Advanced AI algorithms combined with IoT sensors for comprehensive health monitoring 
             and emergency prediction
           </Typography>
@@ -208,15 +392,68 @@ const LandingPage: React.FC = () => {
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center' }}>
           {features.map((feature, index) => (
-            <Card key={index} sx={{ maxWidth: 300, textAlign: 'center', p: 2, flex: '1 1 300px' }}>
-              <CardContent>
-                <Box sx={{ mb: 2 }}>
-                  {feature.icon}
+            <Card 
+              key={index} 
+              sx={{ 
+                maxWidth: 300, 
+                textAlign: 'center', 
+                p: 3, 
+                flex: '1 1 300px',
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: 4,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'translateY(-10px) scale(1.02)',
+                  background: 'rgba(255, 255, 255, 0.25)',
+                  boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+                },
+              }}
+            >
+              <CardContent sx={{ p: 0 }}>
+                <Box 
+                  sx={{ 
+                    mb: 3,
+                    p: 2,
+                    borderRadius: '50%',
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)',
+                    width: 80,
+                    height: 80,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mx: 'auto',
+                  }}
+                >
+                  {React.cloneElement(feature.icon, { 
+                    sx: { 
+                      fontSize: 40, 
+                      color: 'white',
+                      filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.3))',
+                    } 
+                  })}
                 </Box>
-                <Typography variant="h6" gutterBottom fontWeight="bold">
+                <Typography 
+                  variant="h6" 
+                  gutterBottom 
+                  sx={{ 
+                    fontWeight: 'bold',
+                    color: 'white',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  }}
+                >
                   {feature.title}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography 
+                  variant="body2" 
+                  sx={{ 
+                    color: 'rgba(255, 255, 255, 0.8)',
+                    lineHeight: 1.6,
+                  }}
+                >
                   {feature.description}
                 </Typography>
               </CardContent>
@@ -226,38 +463,99 @@ const LandingPage: React.FC = () => {
       </Container>
 
       {/* Demo Section */}
-      <Box sx={{ bgcolor: '#f8f9fa', py: 8 }}>
+      <Box 
+        sx={{ 
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          py: 8,
+          position: 'relative',
+        }}
+      >
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', gap: 6 }}>
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h3" gutterBottom fontWeight="bold">
+              <Typography 
+                variant="h3" 
+                gutterBottom 
+                sx={{
+                  fontWeight: 'bold',
+                  color: 'white',
+                  textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+                }}
+              >
                 Try the Demo Now
               </Typography>
-              <Typography variant="h6" paragraph color="text.secondary">
+              <Typography 
+                variant="h6" 
+                paragraph 
+                sx={{ 
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  textShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                }}
+              >
                 Experience the power of predictive healthcare technology with our 
                 interactive demo featuring real-time data simulation.
               </Typography>
               
               <Box sx={{ mt: 4 }}>
-                <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
+                <Typography 
+                  variant="h6" 
+                  gutterBottom 
+                  sx={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                  }}
+                >
                   Demo Credentials:
                 </Typography>
-                <Paper sx={{ p: 3, bgcolor: 'white', mb: 3 }}>
-                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                <Paper 
+                  sx={{ 
+                    p: 3, 
+                    mb: 3,
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: 3,
+                  }}
+                >
+                  <Typography 
+                    variant="subtitle1" 
+                    fontWeight="bold" 
+                    gutterBottom
+                    sx={{ color: 'white' }}
+                  >
                     Patient Dashboard:
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Phone: <strong>9876543210</strong><br />
-                    Password: <strong>patient123</strong>
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    Phone: <Box component="strong" sx={{ color: 'white' }}>9876543210</Box><br />
+                    Password: <Box component="strong" sx={{ color: 'white' }}>patient123</Box>
                   </Typography>
                 </Paper>
-                <Paper sx={{ p: 3, bgcolor: 'white' }}>
-                  <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                <Paper 
+                  sx={{ 
+                    p: 3,
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(20px)',
+                    WebkitBackdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: 3,
+                  }}
+                >
+                  <Typography 
+                    variant="subtitle1" 
+                    fontWeight="bold" 
+                    gutterBottom
+                    sx={{ color: 'white' }}
+                  >
                     Hospital Dashboard:
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Email: <strong>demo@hospital.com</strong><br />
-                    Password: <strong>hospital123</strong>
+                  <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    Email: <Box component="strong" sx={{ color: 'white' }}>demo@hospital.com</Box><br />
+                    Password: <Box component="strong" sx={{ color: 'white' }}>hospital123</Box>
                   </Typography>
                 </Paper>
               </Box>
@@ -265,7 +563,15 @@ const LandingPage: React.FC = () => {
               <Button 
                 variant="contained" 
                 size="large" 
-                sx={{ mt: 3 }}
+                sx={{ 
+                  mt: 3,
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+                    transform: 'translateY(-3px)',
+                    boxShadow: '0 12px 40px rgba(0,0,0,0.3)',
+                  }
+                }}
                 endIcon={<ArrowForward />}
                 onClick={() => navigate('/login')}
               >
@@ -273,23 +579,37 @@ const LandingPage: React.FC = () => {
               </Button>
             </Box>
             <Box sx={{ flex: 1, textAlign: 'center' }}>
-              <Stack spacing={2}>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <CheckCircle color="success" sx={{ mr: 1 }} />
-                  <Typography>Real-time health data simulation</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <CheckCircle color="success" sx={{ mr: 1 }} />
-                  <Typography>Emergency alert testing</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <CheckCircle color="success" sx={{ mr: 1 }} />
-                  <Typography>AI prediction analysis</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <CheckCircle color="success" sx={{ mr: 1 }} />
-                  <Typography>Hospital coordination system</Typography>
-                </Box>
+              <Stack spacing={3}>
+                {[
+                  'Real-time health data simulation',
+                  'Emergency alert testing', 
+                  'AI prediction analysis',
+                  'Hospital coordination system'
+                ].map((text, index) => (
+                  <Box 
+                    key={index}
+                    sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      p: 2,
+                      borderRadius: 3,
+                      background: 'rgba(255, 255, 255, 0.15)',
+                      backdropFilter: 'blur(10px)',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        background: 'rgba(255, 255, 255, 0.25)',
+                        transform: 'translateX(10px)',
+                      }
+                    }}
+                  >
+                    <CheckCircle sx={{ color: '#4dd0e1', mr: 2, fontSize: 28 }} />
+                    <Typography sx={{ color: 'white', fontWeight: 500 }}>
+                      {text}
+                    </Typography>
+                  </Box>
+                ))}
               </Stack>
             </Box>
           </Box>
@@ -297,19 +617,68 @@ const LandingPage: React.FC = () => {
       </Box>
 
       {/* CTA Section */}
-      <Box sx={{ bgcolor: 'primary.main', color: 'white', py: 6 }}>
+      <Box 
+        sx={{ 
+          background: 'rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(30px)',
+          WebkitBackdropFilter: 'blur(30px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          color: 'white', 
+          py: 8,
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%)',
+            zIndex: -1,
+          }
+        }}
+      >
         <Container maxWidth="md" sx={{ textAlign: 'center' }}>
-          <Typography variant="h4" gutterBottom fontWeight="bold">
+          <Typography 
+            variant="h4" 
+            gutterBottom 
+            sx={{ 
+              fontWeight: 'bold',
+              textShadow: '0 4px 20px rgba(0,0,0,0.3)',
+            }}
+          >
             Ready to Save Lives with AI?
           </Typography>
-          <Typography variant="h6" paragraph sx={{ opacity: 0.9 }}>
+          <Typography 
+            variant="h6" 
+            paragraph 
+            sx={{ 
+              opacity: 0.9,
+              textShadow: '0 2px 10px rgba(0,0,0,0.2)',
+            }}
+          >
             Join the revolution in emergency healthcare response
           </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} justifyContent="center" sx={{ mt: 4 }}>
+          <Stack 
+            direction={{ xs: 'column', sm: 'row' }} 
+            spacing={3} 
+            justifyContent="center" 
+            sx={{ mt: 4 }}
+          >
             <Button 
               variant="contained" 
               size="large"
-              sx={{ bgcolor: 'white', color: 'primary.main', '&:hover': { bgcolor: '#f5f5f5' } }}
+              sx={{ 
+                background: 'rgba(255, 255, 255, 0.2)',
+                backdropFilter: 'blur(20px)',
+                color: 'white',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                '&:hover': { 
+                  background: 'rgba(255, 255, 255, 0.3)',
+                  transform: 'translateY(-3px)',
+                  boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+                }
+              }}
               onClick={() => navigate('/register')}
             >
               Sign Up Now
@@ -317,7 +686,17 @@ const LandingPage: React.FC = () => {
             <Button 
               variant="outlined" 
               size="large"
-              sx={{ borderColor: 'white', color: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}
+              sx={{ 
+                borderColor: 'rgba(255, 255, 255, 0.5)', 
+                color: 'white',
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                '&:hover': { 
+                  borderColor: 'rgba(255, 255, 255, 0.8)', 
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  transform: 'translateY(-3px)',
+                }
+              }}
               onClick={() => navigate('/login')}
             >
               Try Demo
@@ -327,17 +706,46 @@ const LandingPage: React.FC = () => {
       </Box>
 
       {/* Footer */}
-      <Box sx={{ bgcolor: '#1a1a1a', color: 'white', py: 4 }}>
+      <Box 
+        sx={{ 
+          background: 'rgba(0, 0, 0, 0.3)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          color: 'white', 
+          py: 6,
+        }}
+      >
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
             <Box sx={{ flex: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Favorite sx={{ color: 'primary.main', mr: 1, fontSize: 28 }} />
-                <Typography variant="h6" fontWeight="bold">
-                  Rescue.net AI
-                </Typography>
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    p: 1,
+                    borderRadius: 2,
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(10px)',
+                    mr: 2
+                  }}
+                >
+                  <Favorite sx={{ color: '#ff6b6b', mr: 1, fontSize: 28 }} />
+                  <Typography 
+                    variant="h6" 
+                    sx={{
+                      fontWeight: 'bold',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    Rescue.net AI
+                  </Typography>
+                </Box>
               </Box>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              <Typography variant="body2" sx={{ opacity: 0.8, lineHeight: 1.6 }}>
                 Developed for Central India Hackathon 2.0<br />
                 Revolutionizing emergency healthcare with AI and IoT
               </Typography>
@@ -346,14 +754,24 @@ const LandingPage: React.FC = () => {
               <Typography variant="subtitle1" gutterBottom fontWeight="bold">
                 Contact
               </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+              <Typography variant="body2" sx={{ opacity: 0.8, lineHeight: 1.6 }}>
                 Emergency Response System<br />
                 Built with ❤️ for saving lives
               </Typography>
             </Box>
           </Box>
-          <Divider sx={{ my: 3, borderColor: 'rgba(255,255,255,0.1)' }} />
-          <Typography variant="body2" sx={{ textAlign: 'center', opacity: 0.6 }}>
+          <Divider sx={{ my: 4, borderColor: 'rgba(255,255,255,0.2)' }} />
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              textAlign: 'center', 
+              opacity: 0.6,
+              background: 'rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              p: 2,
+              borderRadius: 2,
+            }}
+          >
             © 2025 Rescue.net AI. Built for Central India Hackathon 2.0
           </Typography>
         </Container>

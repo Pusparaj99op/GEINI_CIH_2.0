@@ -29,6 +29,13 @@ import {
   WifiOff,
 } from '@mui/icons-material';
 import { useRealTimeHealthData } from '../hooks/useRealTimeHealthData';
+import { 
+  GlassCard, 
+  GradientText, 
+  StatusIndicator, 
+  PulseElement,
+  AnimatedBackground
+} from '../components/ModernUI';
 
 const PatientDashboard: React.FC = () => {
   const {
@@ -72,12 +79,14 @@ const PatientDashboard: React.FC = () => {
   const healthStatus = getHealthStatus();
 
   return (
-    <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
-      {/* Header */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" fontWeight="bold">
-          Patient Health Monitor
-        </Typography>
+    <AnimatedBackground variant="medical" sx={{ minHeight: '100vh' }}>
+      <Box sx={{ p: 3, maxWidth: 1200, mx: 'auto' }}>
+        {/* Header */}
+        <GlassCard sx={{ p: 3, mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <GradientText variant="h4">
+              Patient Health Monitor
+            </GradientText>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Tooltip title={`Connection: ${connectionStatus}`}>
             <IconButton>

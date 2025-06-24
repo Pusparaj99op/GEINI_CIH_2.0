@@ -11,14 +11,14 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Box } from '@mui/material';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
-// Page imports (we'll create these next)
+// Page imports
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
-import PatientDashboard from './pages/PatientDashboard';
-import HospitalDashboard from './pages/HospitalDashboard';
-import RegisterPage from './pages/RegisterPage';
+import PatientDashboard from './pages/PatientDashboard_Enhanced';
+import HospitalDashboard from './pages/HospitalDashboard_Enhanced';
+import RegisterPage from './pages/RegisterPage_Enhanced';
 import TestConnectionPage from './pages/TestConnectionPage';
-import LoadingScreen from './components/LoadingScreen';
+import LoadingScreen from './components/LoadingScreen_Enhanced';
 
 // Request notification permission
 const requestNotificationPermission = async () => {
@@ -27,88 +27,171 @@ const requestNotificationPermission = async () => {
   }
 };
 
-// Create Material-UI theme with healthcare-focused design
+// Create Material-UI theme with modern glassmorphism and gradient design
 const theme = createTheme({
   palette: {
+    mode: 'light',
     primary: {
-      main: '#2E7D32', // Green for healthcare
-      light: '#4CAF50',
-      dark: '#1B5E20',
+      main: '#667eea',
+      light: '#8fa3ff',
+      dark: '#3f51b5',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: '#D32F2F', // Red for emergencies
-      light: '#F44336',
-      dark: '#B71C1C',
+      main: '#f093fb',
+      light: '#ff9a9e',
+      dark: '#e73c7e',
+      contrastText: '#ffffff',
     },
     error: {
-      main: '#F44336',
+      main: '#ff6b6b',
+      light: '#ff9999',
+      dark: '#ee5a52',
     },
     warning: {
-      main: '#FF9800',
+      main: '#ffa726',
+      light: '#ffcc80',
+      dark: '#f57c00',
     },
     info: {
-      main: '#2196F3',
+      main: '#4facfe',
+      light: '#7fc7ff',
+      dark: '#2196f3',
     },
     success: {
-      main: '#4CAF50',
+      main: '#4dd0e1',
+      light: '#88ffff',
+      dark: '#00acc1',
     },
     background: {
-      default: '#F5F5F5',
-      paper: '#FFFFFF',
+      default: 'transparent',
+      paper: 'rgba(255, 255, 255, 0.8)',
+    },
+    text: {
+      primary: '#2c3e50',
+      secondary: '#34495e',
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
     h1: {
-      fontSize: '2.5rem',
-      fontWeight: 600,
+      fontSize: '3rem',
+      fontWeight: 700,
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
     },
     h2: {
+      fontSize: '2.5rem',
+      fontWeight: 600,
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+    },
+    h3: {
       fontSize: '2rem',
       fontWeight: 600,
     },
-    h3: {
+    h4: {
       fontSize: '1.75rem',
       fontWeight: 500,
     },
-    h4: {
+    h5: {
       fontSize: '1.5rem',
       fontWeight: 500,
     },
-    h5: {
-      fontSize: '1.25rem',
-      fontWeight: 500,
-    },
     h6: {
-      fontSize: '1rem',
+      fontSize: '1.25rem',
       fontWeight: 500,
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 16,
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
-          borderRadius: 8,
-          padding: '10px 20px',
+          borderRadius: 16,
+          padding: '12px 28px',
+          fontWeight: 600,
+          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'translateY(-2px)',
+            boxShadow: '0 12px 40px rgba(31, 38, 135, 0.4)',
+          },
+        },
+        contained: {
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          '&:hover': {
+            background: 'linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%)',
+          },
+        },
+        outlined: {
+          background: 'rgba(255, 255, 255, 0.1)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
         },
       },
     },
     MuiCard: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          borderRadius: 20,
+          background: 'rgba(255, 255, 255, 0.25)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.18)',
+          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0 12px 40px rgba(31, 38, 135, 0.4)',
+          },
         },
       },
     },
     MuiPaper: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
+          borderRadius: 20,
+          background: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)',
+        },
+      },
+    },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 16,
+            background: 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(10px)',
+            '&:hover': {
+              background: 'rgba(255, 255, 255, 0.9)',
+            },
+            '&.Mui-focused': {
+              background: 'rgba(255, 255, 255, 0.95)',
+            },
+          },
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          background: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: 'none',
+          boxShadow: '0 8px 32px rgba(31, 38, 135, 0.37)',
         },
       },
     },
@@ -224,7 +307,25 @@ const App: React.FC = () => {
       <CssBaseline />
       <AuthProvider>
         <Router>
-          <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+          <Box 
+            sx={{ 
+              minHeight: '100vh',
+              background: 'linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab)',
+              backgroundSize: '400% 400%',
+              animation: 'gradient 15s ease infinite',
+              '@keyframes gradient': {
+                '0%': {
+                  backgroundPosition: '0% 50%',
+                },
+                '50%': {
+                  backgroundPosition: '100% 50%',
+                },
+                '100%': {
+                  backgroundPosition: '0% 50%',
+                },
+              },
+            }}
+          >
             <AppRoutes />
           </Box>
         </Router>

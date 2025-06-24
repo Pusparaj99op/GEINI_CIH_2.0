@@ -1,8 +1,8 @@
 /*
- * Enhanced Hospital Dashboard - Emergency response coordination center
- * Real-time patient monitoring and emergency management for healthcare providers
+ * Enhanced Hospital Dashboard - Modern emergency response coordination center
+ * Real-time patient monitoring with glassmorphism design and AI analytics
  * 
- * Features: Patient monitoring, emergency alerts, resource management, AI analytics
+ * Built for Central India Hackathon 2.0 - Emergency Response System
  */
 
 import React, { useState, useEffect } from 'react';
@@ -24,9 +24,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Badge,
   LinearProgress,
+  Avatar,
+  Stack,
 } from '@mui/material';
 import {
   LocalHospital,
@@ -39,6 +40,8 @@ import {
   LocationOn,
   MonitorHeart,
   Warning,
+  CheckCircle,
+  AccessTime,
 } from '@mui/icons-material';
 import {
   PieChart,
@@ -55,6 +58,14 @@ import {
   Line,
 } from 'recharts';
 import { useAuth } from '../context/AuthContext';
+import { 
+  GlassCard, 
+  GradientText, 
+  StatusIndicator, 
+  AnimatedBackground,
+  GradientButton,
+  GlassButton
+} from '../components/ModernUI';
 
 interface PatientStatus {
   id: string;
